@@ -1,0 +1,8 @@
+FROM docker.io/jenkins/jenkins:lts-jdk17
+
+# Install plugins
+RUN jenkins-plugin-cli --plugins job-dsl \
+    git
+
+# Copy init scripts so Jenkins creates the seed job on first boot
+COPY init.groovy.d/ /usr/share/jenkins/ref/init.groovy.d/

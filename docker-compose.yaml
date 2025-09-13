@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    container_name: jenkins
+    ports:
+      - "8082:8080"
+    environment:
+      - JENKINS_OPTS=--prefix=/jenkins
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - JENKINS_ADMIN_USER=${JENKINS_ADMIN_USER}
+      - JENKINS_ADMIN_PASS=${JENKINS_ADMIN_PASS}
+      - JENKINS_MCP_USER=${JENKINS_MCP_USER}
+      - JENKINS_MCP_PASS=${JENKINS_MCP_PASS}
+    volumes:
+      - jenkins_home:/var/jenkins_home
+
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    container_name: mcp-server
+    volumes:
+      - ./jenkins-secrets/mcp-user.token:/run/secrets/mcp-user.token:ro
+    depends_on:
+      - jenkins
+    environment:
+      - JENKINS_URL=http://jenkins:8080/jenkins
+      - JENKINS_ADMIN_USER=${JENKINS_ADMIN_USER}
+      - JENKINS_ADMIN_PASS=${JENKINS_ADMIN_PASS}
+      - JENKINS_MCP_USER=mcp-user
+      - JENKINS_TOKEN_FILE=/run/secrets/mcp-user.token
+    ports:
+      - "8081:8081"
+    stdin_open: true
+    tty: true
+
+  mcp-client:
+    build:
+      context: ./mcp-client
+      dockerfile: Dockerfile
+    container_name: mcp-client
+    depends_on:
+      - mcp-server
+      - jenkins
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MCP_SERVER_URL=http://mcp-server:8081/sse
+    stdin_open: true
+    tty: true
+
+volumes:
+  jenkins_home:
