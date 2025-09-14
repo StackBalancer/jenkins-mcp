@@ -1,4 +1,4 @@
-# jenkins-mcp-adapter
+# mcp-jenkins-adapter
 
 This project demonstrates a fully containerized MCP client-server application that interacts with Jenkins via an API token, and leverages OpenAI for plugging in AI-powered functionalities in Jenkins.
 
