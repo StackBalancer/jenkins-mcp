@@ -67,7 +67,6 @@ jenkins-mcp-adapter/
 │   ├── go.mod
 │   ├── go.sum
 │   ├── main.go
-│   └── misc.txt
 ├── mcp-server
 │   ├── Dockerfile
 │   ├── go.mod
@@ -132,15 +131,19 @@ Jenkins LLM Bridge started. Type your prompts:
 
 ---
 
-## Triggering Jenkins Jobs
+## Processing Jenkins Jobs Data
 
-MCP server exposes tools to trigger Jenkins jobs:
+MCP server exposes tools to trigger Jenkins jobs and process build data:
 
 - `trigger_job` – Trigger a job by name, optionally with parameters.
 
 - `get_build_status` – Get the latest build status for a job.
 
 - `get_console_log` – Retrieve console log for a specific build number.
+
+- `analyze_logs` - A helper function that gathers logs from Jenkins via the MCP Server, transforms them into mcp.Content, and then sends them to OpenAI for analysis.
+
+    Role in architecture: Not exposed as a public MCP tool; instead, it’s a private “bridge” feature that enriches what the MCP client can request.
 
 ---
 
